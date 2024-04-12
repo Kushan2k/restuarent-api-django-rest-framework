@@ -5,12 +5,18 @@ from django.contrib.auth.models import User
 class Category(models.Model):
   slug=models.SlugField()
   title=models.CharField(max_length=255,db_index=True)
+  
+  def __str__(self) -> str:
+    return self.title.capitalize()
 
 class MenuItem(models.Model):
   title=models.CharField(max_length=255,db_index=True)
   price=models.DecimalField(max_digits=6,decimal_places=2,db_index=True)
   featured=models.BooleanField(db_index=True)
-  category=models.ForeignKey(Category,on_delete=models.PROTECT)
+  category=models.ForeignKey(Category,on_delete=models.PROTECT,default=1)
+
+  def __str__(self) -> str:
+    return self.title.capitalize()+' '+str(self.price)+'$'
 
 class Cart(models.Model):
   user=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -18,6 +24,9 @@ class Cart(models.Model):
   quantity=models.SmallIntegerField()
   unit_price=models.DecimalField(max_digits=6,decimal_places=2)
   price=models.DecimalField(max_digits=6,decimal_places=2)
+
+  def __str__(self) -> str:
+    return self.user.username+' Cart'
 
   class Meta:
     unique_together=('menuitem','user')
@@ -28,6 +37,7 @@ class Order(models.Model):
   status=models.BooleanField()
   total=models.DecimalField(max_digits=6,decimal_places=2)
   date=models.DateField(db_index=True)
+
 
 class OderItem(models.Model):
   order=models.ForeignKey(User,on_delete=models.CASCADE)
